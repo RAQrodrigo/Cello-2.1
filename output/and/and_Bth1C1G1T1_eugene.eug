@@ -1,0 +1,156 @@
+PartType spacer;
+PartType scar;
+PartType promoter;
+PartType cds;
+PartType terminator;
+PartType cassette;
+
+promoter P_IPTG(.SEQUENCE("TTACAAAGAAAATTCGACAAACTGTTATTTTTCTATCTATTTATTTGAATTGTGAGCGGATAACAATTACCTTTGTCGGCAATTGTGAGCGGATAACAATTAAATAAAGATATTCTCGTCAAACAAATATAAATAATATAAAC"));
+promoter P_aTc(.SEQUENCE("ttttgcacccgctttccaagagaagaaagccttgttaaattgacttagtgtaaaagcgcagtactgcttgaccataagaacaaaaaaatctctatcactgatagggataaagtttggaagataaagctaaaagttcttatctttgcagtctccctatcagtgatagagacgca"));
+cds M1(.SEQUENCE("CAAAGATAATAGAACTTAAGGTTTTAGAGCTAGAAATAGCAAGTTAAAATAAGGCTAGTCCGTTATCAACTTGAAAAAGTGGCACCGAGTCGGTGCTTTTTTT"));
+terminator L3S3P41(.SEQUENCE("GGATCCAAAAAAAAAAAACACCCTAACGGGTGTTTTTTTTTTTTTGGTCTGCCgcggccgc"));
+promoter PM1(.SEQUENCE("TGCTGTCATAGGCCGGTTGTCCGGTAGTCCGGATGATTTAAGGAAGATTTCTCTTCTTTTTTCACTTTCTCCGAACAACCTCCACTTAAGTTCTATTATCTTTGCAGT"));
+cds M3(.SEQUENCE("CAAAGATAATTAAGTTAAGGGTTTTAGAGCTAGAAATAGCAAGTTAAAATAAGGCTAGTCCGTTATCAACTTGAAAAAGTGGCACCGAGTCGGTGCTTTTTTT"));
+terminator ECK120034435(.SEQUENCE("GGATCCCTCGGTACCAAATTCCAGAAAAGAGACGCTGAAAAGCGTCTTTTTTCGTTTTGGTCCgcggccgc"));
+promoter PM3(.SEQUENCE("TGCTGTCATAGGCCGGTTGTCCGGTAGTCCGGATGATTTAAGGAAGATTTCTCTTCTTTTTTCACTTTCTCCGAACAACCTCCACCTTAACTTAATTATCTTTGCAGT"));
+cds M4(.SEQUENCE("CAAAGATACTTATGTTAGAAGTTTTAGAGCTAGAAATAGCAAGTTAAAATAAGGCTAGTCCGTTATCAACTTGAAAAAGTGGCACCGAGTCGGTGCTTTTTTT"));
+terminator ECK120033736(.SEQUENCE("GGATCCaacgcatgagAAAGCCCCCGGAAGATCACCTTCCGGGGGCTTTtttattgcgcgcggccgc"));
+promoter PM4(.SEQUENCE("TGCTGTCATAGGCCGGTTGTCCGGTAGTCCGGATGATTTAAGGAAGATTTCTCTTCTTTTTTCACTTTCTCCGAACAACCTCCATTCTAACATAAGTATCTTTGCAGT"));
+scar F_scar(.SEQUENCE("CGCT"));
+scar E_scar(.SEQUENCE("GCTT"));
+scar D_scar(.SEQUENCE("AGGT"));
+scar C_scar(.SEQUENCE("AATG"));
+scar B_scar(.SEQUENCE("TACG"));
+scar A_scar(.SEQUENCE("GGAG"));
+scar Y_scar(.SEQUENCE("ATTG"));
+scar X_scar(.SEQUENCE("TGTC"));
+scar V_scar(.SEQUENCE("TCTG"));
+scar U_scar(.SEQUENCE("GGGC"));
+scar R_scar(.SEQUENCE("GTAA"));
+scar Q_scar(.SEQUENCE("GAGT"));
+scar P_scar(.SEQUENCE("CCTA"));
+scar O_scar(.SEQUENCE("ATGC"));
+scar G_scar(.SEQUENCE("ATAG"));
+cassette nanoluc_cassette(.SEQUENCE("ATGGTTTTTACTCTGGAAGATTTTGTTGGCGATTGGCGTCAGACCGCGGGTTATAATTTGGATCAAGTCCTGGAACAGGGTGGCGTAAGCTCTCTGTTCCAGAACCTGGGTGTGAGCGTGACGCCGATTCAGCGCATCGTTCTGTCCGGCGAGAACGGTCTGAAAATTGATATTCATGTGATCATCCCGTACGAAGGCCTGAGCGGTGACCAAATGGGTCAAATCGAGAAAATCTTTAAAGTCGTCTACCCAGTTGACGATCACCACTTCAAGGTTATCTTGCATTACGGTACGCTGGTGATTGATGGTGTGACCCCGAATATGATTGACTATTTCGGCCGTCCGTATGAAGGCATTGCCGTTTTTGACGGTAAAAAGATCACCGTCACCGGTACCCTGTGGAATGGCAATAAGATTATTGACGAGCGTCTGATTAACCCGGACGGCAGCCTGCTGTTCCGCGTGACCATCAACGGTGTCACGGGTTGGCGTCTGTGCGAGCGCATCCTGGCATAA"));
+
+PartType fencepost;
+fencepost L1();
+fencepost L2();
+
+cassette Gate1_a_cassette();
+Device Gate1_a(
+    P_aTc,
+    Gate1_a_cassette
+);
+
+cassette Gate3_a_cassette();
+Device Gate3_a(
+    P_IPTG,
+    Gate3_a_cassette
+);
+
+cassette Gate4_a_cassette();
+Device Gate4_a(
+    PM1,
+    Gate4_a_cassette
+);
+
+cassette Gate4_b_cassette();
+Device Gate4_b(
+    PM3,
+    Gate4_b_cassette
+);
+
+Device nanoluc_reporter_2_a(
+    PM4,
+    nanoluc_cassette
+);
+
+
+Rule Gate1_aRule0( ON Gate1_a:
+    ALL_FORWARD
+);
+
+Rule Gate3_aRule0( ON Gate3_a:
+    ALL_FORWARD
+);
+
+Rule Gate4_aRule0( ON Gate4_a:
+    ALL_FORWARD
+);
+
+Rule Gate4_bRule0( ON Gate4_b:
+    ALL_FORWARD
+);
+
+Rule nanoluc_reporter_2_aRule0( ON nanoluc_reporter_2_a:
+    ALL_FORWARD
+);
+
+
+Gate1_a_devices = product(Gate1_a);
+Gate3_a_devices = product(Gate3_a);
+Gate4_a_devices = product(Gate4_a);
+Gate4_b_devices = product(Gate4_b);
+nanoluc_reporter_2_a_devices = product(nanoluc_reporter_2_a);
+
+Device Gate1_aDevice();
+Device Gate3_aDevice();
+Device Gate4_aDevice();
+Device Gate4_bDevice();
+Device nanoluc_reporter_2_aDevice();
+
+Device circuit();
+
+Rule CircuitRule0( ON circuit:
+    CONTAINS Gate1_a AND
+    CONTAINS Gate3_a AND
+    CONTAINS Gate4_a AND
+    CONTAINS Gate4_b AND
+    CONTAINS nanoluc_reporter_2_a AND
+    ALL_FORWARD AND
+    STARTSWITH L1 AND
+    ENDSWITH L2 AND
+    Gate4_a AFTER Gate3_a AND
+    Gate4_a AFTER Gate1_a AND
+    Gate3_a AFTER Gate1_a AND
+    CONTAINS Gate1_a AND
+    CONTAINS Gate3_a AND
+    CONTAINS Gate4_a AND
+    CONTAINS Gate4_b AND
+    CONTAINS nanoluc_reporter_2_a
+);
+Array allResults;
+
+for(num i1 = 0; i1 < sizeof(Gate1_a_devices); i1 = i1 + 1) {} 
+for(num i2 = 0; i2 < sizeof(Gate3_a_devices); i2 = i2 + 1) {} 
+for(num i3 = 0; i3 < sizeof(Gate4_a_devices); i3 = i3 + 1) {} 
+for(num i4 = 0; i4 < sizeof(Gate4_b_devices); i4 = i4 + 1) {} 
+for(num i5 = 0; i5 < sizeof(nanoluc_reporter_2_a_devices); i5 = i5 + 1) {} 
+
+Gate1_aDevice = Gate1_a_devices[i1];
+Gate3_aDevice = Gate3_a_devices[i2];
+Gate4_aDevice = Gate4_a_devices[i3];
+Gate4_bDevice = Gate4_b_devices[i4];
+nanoluc_reporter_2_aDevice = nanoluc_reporter_2_a_devices[i5];
+
+Device circuit(
+    Gate1_aDevice,
+    Gate3_aDevice,
+    Gate4_aDevice,
+    Gate4_bDevice,
+    nanoluc_reporter_2_aDevice,
+    L1,
+    L2
+);
+
+
+result = permute(circuit);
+
+allResults = allResults + result;
+
+}
+}
+}
+}
+}

@@ -1,0 +1,22 @@
+digraph "circuit" {
+label="circuit";
+rankdir="LR";
+remincross=true;
+n5 [ shape=octagon, label="A\nPRIMARY_INPUT\nLacI_sensor", fontcolor="black"];
+n6 [ shape=octagon, label="B\nPRIMARY_INPUT\nTetR_sensor", fontcolor="black"];
+n7 [ shape=octagon, label="X\nPRIMARY_OUTPUT\nYFP_reporter_3", fontcolor="black"];
+c9 [ shape=record, label="{{<p5> A}|$114\nNOT\nE1_BetI|{<p8> Y}}",  ];
+c10 [ shape=record, label="{{<p5> A}|$115\nNOT\nH1_HlyIIR|{<p8> Y}}",  ];
+c11 [ shape=record, label="{{<p5> A|<p6> B}|$116\nNOR\nQ2_QacR|{<p8> Y}}",  ];
+c12 [ shape=record, label="{{<p5> A|<p6> B}|$117\nNOR\nA1_AmtR|{<p8> Y}}",  ];
+c13 [ shape=record, label="{{<p5> A|<p6> B}|$118\nNOR\nP3_PhlF|{<p8> Y}}",  ];
+c9:p8:e -> c11:p5:w [color="black", fontcolor="black", label=""];
+c10:p8:e -> c12:p6:w [color="black", fontcolor="black", label=""];
+c11:p8:e -> c13:p5:w [color="black", fontcolor="black", label=""];
+c12:p8:e -> c13:p6:w [color="black", fontcolor="black", label=""];
+n5:e -> c12:p5:w [color="black", fontcolor="black", label=""];
+n5:e -> c9:p5:w [color="black", fontcolor="black", label=""];
+n6:e -> c10:p5:w [color="black", fontcolor="black", label=""];
+n6:e -> c11:p6:w [color="black", fontcolor="black", label=""];
+c13:p8:e -> n7:w [color="black", fontcolor="black", label=""];
+}

@@ -1,0 +1,496 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cello 2.1 - Genetic Circuit Designer</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #0a0e17;
+            color: #c9d1d9;
+            min-height: 100vh;
+            font-size: 16px;
+        }
+        .header {
+            background: linear-gradient(135deg, #1a1f2e 0%, #0d1117 100%);
+            border-bottom: 1px solid #30363d;
+            padding: 28px 32px;
+        }
+        .header h1 {
+            font-size: 36px;
+            color: #58a6ff;
+            margin-bottom: 6px;
+        }
+        .header p { color: #8b949e; font-size: 16px; }
+        .container { max-width: 1600px; margin: 0 auto; padding: 32px; }
+        .card {
+            background: #161b22;
+            border: 1px solid #30363d;
+            border-radius: 8px;
+            padding: 28px;
+            margin-bottom: 24px;
+        }
+        .card h2 {
+            font-size: 22px;
+            color: #58a6ff;
+            margin-bottom: 18px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .form-row {
+            display: flex;
+            gap: 16px;
+            margin-bottom: 16px;
+            flex-wrap: wrap;
+        }
+        .form-group { flex: 1; min-width: 200px; }
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-size: 15px;
+            color: #8b949e;
+            font-weight: 600;
+        }
+        select, input[type="file"] {
+            width: 100%;
+            padding: 12px 14px;
+            background: #0d1117;
+            border: 1px solid #30363d;
+            border-radius: 6px;
+            color: #c9d1d9;
+            font-size: 15px;
+        }
+        select:focus, input[type="file"]:focus {
+            outline: none;
+            border-color: #58a6ff;
+        }
+        .btn {
+            padding: 12px 28px;
+            background: #238636;
+            color: #fff;
+            border: none;
+            border-radius: 6px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        .btn:hover { background: #2ea043; }
+        .btn:disabled { background: #21262d; color: #484f58; cursor: not-allowed; }
+        .btn-secondary {
+            background: #21262d;
+            border: 1px solid #30363d;
+        }
+        .btn-secondary:hover { background: #30363d; }
+        .spinner {
+            display: none;
+            align-items: center;
+            gap: 12px;
+            padding: 16px;
+            background: #0d1117;
+            border-radius: 6px;
+            border: 1px solid #30363d;
+        }
+        .spinner.active { display: flex; }
+        .spinner-ring {
+            width: 24px; height: 24px;
+            border: 3px solid #30363d;
+            border-top-color: #58a6ff;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        .score-display {
+            text-align: center;
+            padding: 32px;
+            background: linear-gradient(135deg, #1a1f2e, #0d1117);
+            border-radius: 8px;
+            border: 1px solid #30363d;
+        }
+        .score-value {
+            font-size: 56px;
+            font-weight: 700;
+            margin: 8px 0;
+        }
+        .score-good { color: #3fb950; }
+        .score-medium { color: #d29922; }
+        .score-bad { color: #f85149; }
+        .score-label { font-size: 14px; color: #8b949e; text-transform: uppercase; letter-spacing: 1px; }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 15px;
+        }
+        th, td {
+            padding: 10px 14px;
+            text-align: center;
+            border-bottom: 1px solid #21262d;
+        }
+        th {
+            background: #0d1117;
+            color: #58a6ff;
+            font-weight: 600;
+            font-size: 13px;
+            text-transform: uppercase;
+        }
+        tr:hover { background: #1c2128; }
+        .cell-on { color: #3fb950; font-weight: 600; }
+        .cell-off { color: #f85149; }
+        .images-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 24px;
+        }
+        .image-card {
+            background: #0d1117;
+            border: 1px solid #30363d;
+            border-radius: 6px;
+            padding: 20px;
+            text-align: center;
+        }
+        .image-card img {
+            width: 100%;
+            max-width: 1500px;
+            height: auto;
+            border-radius: 4px;
+        }
+        .image-card h3 {
+            font-size: 15px;
+            color: #8b949e;
+            margin-bottom: 10px;
+        }
+        .downloads {
+            display: flex;
+            gap: 14px;
+            flex-wrap: wrap;
+        }
+        .download-btn {
+            display: inline-block;
+            padding: 10px 20px;
+            background: #21262d;
+            color: #58a6ff;
+            border: 1px solid #30363d;
+            border-radius: 6px;
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 500;
+            transition: background 0.2s;
+        }
+        .download-btn:hover { background: #30363d; }
+        .error-box {
+            background: #1a0a0a;
+            border: 1px solid #f85149;
+            border-radius: 6px;
+            padding: 16px;
+            color: #f85149;
+            font-family: monospace;
+            font-size: 12px;
+            white-space: pre-wrap;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        .hidden { display: none; }
+        .divider {
+            border: none;
+            border-top: 1px solid #30363d;
+            margin: 20px 0;
+        }
+        .badge {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: 600;
+        }
+        .badge-eco { background: #0d419d33; color: #58a6ff; }
+        .badge-bth { background: #9d410d33; color: #f0883e; }
+        .badge-sc { background: #0d9d5633; color: #3fb950; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>Cello 2.1</h1>
+        <p>Diseñador de circuitos genéticos a partir de descripciones Verilog</p>
+    </div>
+
+    <div class="container">
+        <!-- Input Section -->
+        <div class="card">
+            <h2>Circuito</h2>
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Circuito Verilog (librería)</label>
+                    <select id="verilogSelect">
+                        <option value="">-- Seleccionar circuito --</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>O subir archivo .v</label>
+                    <input type="file" id="verilogFile" accept=".v">
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Configuración UCF (biología)</label>
+                    <select id="ucfSelect">
+                        <option value="">-- Seleccionar UCF --</option>
+                    </select>
+                </div>
+                <div class="form-group" style="display:flex; align-items:flex-end;">
+                    <button class="btn" id="runBtn" onclick="runCello()">
+                        Ejecutar Cello
+                    </button>
+                </div>
+            </div>
+            <div class="spinner" id="spinner">
+                <div class="spinner-ring"></div>
+                <span id="statusMsg">Procesando...</span>
+            </div>
+            <div class="error-box hidden" id="errorBox"></div>
+        </div>
+
+        <!-- Score Section -->
+        <div class="card hidden" id="scoreCard">
+            <h2>Score del Circuito</h2>
+            <div class="score-display">
+                <div class="score-label">Min(ON) / Max(OFF)</div>
+                <div class="score-value" id="scoreValue">--</div>
+                <div class="score-label" id="scoreInterpretation"></div>
+            </div>
+        </div>
+
+        <!-- Truth Table Section -->
+        <div class="card hidden" id="tableCard">
+            <h2>Tabla de Verdad</h2>
+            <div style="overflow-x:auto;">
+                <table id="truthTable"></table>
+            </div>
+        </div>
+
+        <!-- Images Section -->
+        <div class="card hidden" id="imagesCard">
+            <h2>Visualizaciones</h2>
+            <div class="images-grid" id="imagesGrid"></div>
+        </div>
+
+        <!-- Downloads Section -->
+        <div class="card hidden" id="downloadsCard">
+            <h2>Descargar Resultados</h2>
+            <div class="downloads" id="downloadsList"></div>
+        </div>
+    </div>
+
+    <script>
+        let currentTaskId = null;
+
+        async function loadConfigs() {
+            try {
+                const res = await fetch('/api/configs');
+                const data = await res.json();
+
+                const ucfSelect = document.getElementById('ucfSelect');
+                data.configs.forEach(c => {
+                    const opt = document.createElement('option');
+                    opt.value = c;
+                    opt.textContent = c;
+                    ucfSelect.appendChild(opt);
+                });
+
+                const verilogSelect = document.getElementById('verilogSelect');
+                data.verilogs.forEach(v => {
+                    const opt = document.createElement('option');
+                    opt.value = v;
+                    opt.textContent = v;
+                    verilogSelect.appendChild(opt);
+                });
+            } catch (e) {
+                console.error('Error loading configs:', e);
+            }
+        }
+
+        async function runCello() {
+            const ucf = document.getElementById('ucfSelect').value;
+            const verilogName = document.getElementById('verilogSelect').value;
+            const fileInput = document.getElementById('verilogFile');
+            const hasFile = fileInput.files.length > 0;
+
+            if (!ucf) {
+                showError('Selecciona una configuración UCF');
+                return;
+            }
+            if (!verilogName && !hasFile) {
+                showError('Selecciona un circuito Verilog o sube un archivo');
+                return;
+            }
+
+            document.getElementById('runBtn').disabled = true;
+            document.getElementById('spinner').classList.add('active');
+            document.getElementById('errorBox').classList.add('hidden');
+            hideResults();
+
+            const formData = new FormData();
+            formData.append('ucf', ucf);
+            if (hasFile) {
+                formData.append('verilog_file', fileInput.files[0]);
+            } else {
+                formData.append('verilog_name', verilogName);
+            }
+
+            try {
+                const res = await fetch('/api/run', { method: 'POST', body: formData });
+                const data = await res.json();
+
+                if (data.error) {
+                    showError(data.error);
+                    return;
+                }
+
+                currentTaskId = data.task_id;
+                pollStatus(currentTaskId);
+            } catch (e) {
+                showError('Error de conexión: ' + e.message);
+            }
+        }
+
+        async function pollStatus(taskId) {
+            const interval = setInterval(async () => {
+                try {
+                    const res = await fetch(`/api/status/${taskId}`);
+                    const data = await res.json();
+
+                    document.getElementById('statusMsg').textContent = data.message || 'Procesando...';
+
+                    if (data.status === 'done') {
+                        clearInterval(interval);
+                        showResults(data);
+                    } else if (data.status === 'error') {
+                        clearInterval(interval);
+                        showError(data.message);
+                    }
+                } catch (e) {
+                    clearInterval(interval);
+                    showError('Error consultando estado: ' + e.message);
+                }
+            }, 2000);
+        }
+
+        function showResults(data) {
+            document.getElementById('runBtn').disabled = false;
+            document.getElementById('spinner').classList.remove('active');
+
+            // Score
+            if (data.score !== null && data.score !== undefined) {
+                document.getElementById('scoreCard').classList.remove('hidden');
+                const el = document.getElementById('scoreValue');
+                el.textContent = data.score.toExponential(4);
+
+                const interp = document.getElementById('scoreInterpretation');
+                if (data.score >= 1) {
+                    el.className = 'score-value score-good';
+                    interp.textContent = 'Buen circuito (score > 1)';
+                } else if (data.score >= 0.5) {
+                    el.className = 'score-value score-medium';
+                    interp.textContent = 'Circuit aceptable';
+                } else {
+                    el.className = 'score-value score-bad';
+                    interp.textContent = 'Circuit pobre (score < 0.5)';
+                }
+            }
+
+            // Truth Table
+            if (data.table && data.table.labels && data.table.labels.length > 0) {
+                document.getElementById('tableCard').classList.remove('hidden');
+                renderTable(data.table.labels, data.table.rows);
+            }
+
+            // Images
+            const images = [];
+            if (data.images) {
+                if (data.images.tech_mapping) {
+                    images.push({ url: `/api/image/${currentTaskId}/tech`, title: 'Circuito (Tech Mapping)' });
+                }
+                if (data.images.response_plots) {
+                    images.push({ url: `/api/image/${currentTaskId}/response`, title: 'Response Plots' });
+                }
+                if (data.images.sbol_plot) {
+                    images.push({ url: `/api/image/${currentTaskId}/sbol`, title: 'SBOL Diagram' });
+                }
+            }
+            if (images.length > 0) {
+                document.getElementById('imagesCard').classList.remove('hidden');
+                renderImages(images);
+            }
+
+            // Downloads
+            const downloads = [
+                { url: `/api/download/${currentTaskId}/zip`, label: 'Todos los archivos (ZIP)' },
+                { url: `/api/download/${currentTaskId}/score`, label: 'Score (CSV)' },
+                { url: `/api/download/${currentTaskId}/table`, label: 'Tabla de verdad (CSV)' },
+                { url: `/api/download/${currentTaskId}/dna`, label: 'Diseño ADN (CSV)' },
+                { url: `/api/download/${currentTaskId}/sequences`, label: 'Secuencias ADN (CSV)' },
+            ];
+            document.getElementById('downloadsCard').classList.remove('hidden');
+            renderDownloads(downloads);
+        }
+
+        function renderTable(labels, rows) {
+            const table = document.getElementById('truthTable');
+            let html = '<thead><tr>';
+            labels.forEach(l => { html += `<th>${l}</th>`; });
+            html += '</tr></thead><tbody>';
+            rows.forEach(row => {
+                html += '<tr>';
+                row.forEach(cell => {
+                    const num = parseFloat(cell);
+                    if (!isNaN(num)) {
+                        const cls = num > 1 ? 'cell-on' : 'cell-off';
+                        html += `<td class="${cls}">${num.toFixed(4)}</td>`;
+                    } else {
+                        html += `<td>${cell}</td>`;
+                    }
+                });
+                html += '</tr>';
+            });
+            html += '</tbody>';
+            table.innerHTML = html;
+        }
+
+        function renderImages(images) {
+            const grid = document.getElementById('imagesGrid');
+            grid.innerHTML = images.map(img => `
+                <div class="image-card">
+                    <h3>${img.title}</h3>
+                    <img src="${img.url}" alt="${img.title}"
+                         onerror="this.style.display='none'; this.parentElement.innerHTML += '<p style=\\'color:#8b949e\\'>No disponible</p>'">
+                </div>
+            `).join('');
+        }
+
+        function renderDownloads(files) {
+            const list = document.getElementById('downloadsList');
+            list.innerHTML = files.map(f => `
+                <a href="${f.url}" class="download-btn" download>${f.label}</a>
+            `).join('');
+        }
+
+        function hideResults() {
+            ['scoreCard', 'tableCard', 'imagesCard', 'downloadsCard'].forEach(id => {
+                document.getElementById(id).classList.add('hidden');
+            });
+        }
+
+        function showError(msg) {
+            document.getElementById('runBtn').disabled = false;
+            document.getElementById('spinner').classList.remove('active');
+            const box = document.getElementById('errorBox');
+            box.textContent = msg;
+            box.classList.remove('hidden');
+        }
+
+        loadConfigs();
+    </script>
+</body>
+</html>

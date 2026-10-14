@@ -1,0 +1,27 @@
+# macOS files
+.DS_Store
+
+# windows files
+.bat
+
+# Development environment directories and files
+venv/
+.idea/
+
+# Python cache and compiled files
+__pycache__/
+*.pyc
+*.pyo
+
+# Development tools and metadata
+*.history
+.vscode/
+
+# Logs and temporary directories
+logs/
+temp_out/
+
+# Misc
+assets/Papers
+assets/Slides
+assets/pseudo_code_and_scratch.txt
