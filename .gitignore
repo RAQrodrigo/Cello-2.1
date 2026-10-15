@@ -20,6 +20,11 @@ __pycache__/
 # Logs and temporary directories
 logs/
 temp_out/
+*.log
+webapp/temp/
+
+# Generated outputs
+output/
 
 # Misc
 assets/Papers

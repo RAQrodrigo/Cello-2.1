@@ -1,9 +1,0 @@
-WARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.
- * Running on http://127.0.0.1:5000
-Press CTRL+C to quit
- * Restarting with stat
- * Debugger is active!
- * Debugger PIN: 141-603-200
-127.0.0.1 - - [13/Oct/2026 23:05:40] "POST /api/run HTTP/1.1" 200 -
-NoneType: None
-127.0.0.1 - - [13/Oct/2026 23:05:55] "GET /api/status/and_Eco1C1G1T1_1791943540 HTTP/1.1" 200 -
